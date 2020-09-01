@@ -40,11 +40,13 @@ def help_command(update, context):
 
 def echo(update, context):
     """Echo the user message."""
+    x = update.message.from_user.id
+    print(x)
+    if(x == 197183803):
+       update.message.reply_text(chat_id=update.message.chat.id, text = "dllm")
     if((update.message.text).lower() == 'dllm'):
-        #context.bot.delete_message(update.message.message_id,update.message)
+        context.bot.delete_message(update.message.message_id,update.message)
         context.bot.deleteMessage(chat_id=update.message.chat.id, message_id=update.message.message_id)
-        print(update.message.chat.id)
-        print(update.message.from_user.id)
         x = update.message.from_user.id
         is_found =False
         for  i in range(len(List)):
@@ -56,12 +58,15 @@ def echo(update, context):
             if is_found:
                 List[Temp][1] += 1
                 if(List[Temp][1]%5==0):
-                    context.bot.sendMessage(chat_id=update.message.chat.id,text = 'Dont say dllm plz, you speaked '+str(List[Temp][1])+' times ' + str(update.message.from_user.username))
+                    update.message.reply_text(chat_id=update.message.chat.id,text = 'Dont say dllm plz, you speaked '+str(List[Temp][1])+' times ' + str(update.message.from_user.username))
                 break
         if not is_found:
             List.append([x,1])
-            print('abc')
-            print(List)
+
+def go(update, context):
+    x = update.message.from_user.id
+    if( x == 197183803):
+       update.message.reply_text(chat_id=update.message.chat.id, text = "dllm")
 
 def main():
     """Start the bot."""
@@ -71,6 +76,7 @@ def main():
 
     # on noncommand i.e message - echo the message on Telegram
     dp.add_handler(MessageHandler(Filters.text & ~Filters.command , echo))
+    dp.add_handler(MessageHandler(Filters.sticker , go))
     
 
     # Start the Bot
