@@ -1,15 +1,20 @@
 import logging
+import random
+import telegram
 
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackQueryHandler
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, User, Bot
+from telegram import User, InlineKeyboardMarkup
 
 updater = Updater("1312704556:AAE23BjzU1lL4SrREPqpdi6WNXSrb1z12f8", use_context=True)
+TEMP = 0
+List = []
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
 logger = logging.getLogger(__name__)
+
 
 
 # Define a few command handlers. These usually take the two arguments update and
@@ -24,16 +29,39 @@ def help_command(update, context):
     update.message.reply_text('Help!')
 
 
+#def echo(update, context):
+#    """Echo the user message."""
+#    text = update.message.text
+#    if ( text.lower() =='dllm'):
+#        update.message.reply_text('dllm')
+#    if ( text.lower() == 'source'):
+#        update.message.reply_text('here is the source link :'+
+#        'https://connectpolyu-my.sharepoint.com/:f:/g/personal/18022038d_connect_polyu_hk/EoftV3mXfn9Em_HTMLRGWwkBIJHySPhJrKfn237Z5T3rtA?e=sggDys')
+
 def echo(update, context):
     """Echo the user message."""
-    text = update.message.text
-    if ( text.lower() =='dllm'):
-        update.message.reply_text('dllm')
-    if ( text.lower() == 'source'):
-        update.message.reply_text('here is the source link :'+
-        'https://connectpolyu-my.sharepoint.com/:f:/g/personal/18022038d_connect_polyu_hk/EoftV3mXfn9Em_HTMLRGWwkBIJHySPhJrKfn237Z5T3rtA?e=sggDys')
-
-
+    if((update.message.text).lower() == 'dllm'):
+        #context.bot.delete_message(update.message.message_id,update.message)
+        context.bot.deleteMessage(chat_id=update.message.chat.id, message_id=update.message.message_id)
+        print(update.message.chat.id)
+        print(update.message.from_user.id)
+        x = update.message.from_user.id
+        is_found =False
+        for  i in range(len(List)):
+            for j in range(len(List[i])):
+                if List[i][j] == x:
+                    is_found = True
+                    Temp = i
+                    break
+            if is_found:
+                List[Temp][1] += 1
+                if(List[Temp][1]%5==0):
+                    context.bot.sendMessage(chat_id=update.message.chat.id,text = 'Dont say dllm plz, you speaked '+str(List[Temp][1])+' times ' + str(update.message.from_user.username))
+                break
+        if not is_found:
+            List.append([x,1])
+            print('abc')
+            print(List)
 
 def main():
     """Start the bot."""
@@ -41,12 +69,9 @@ def main():
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
 
-    # on different commands - answer in Telegram
-    dp.add_handler(CommandHandler("start", start))
-    dp.add_handler(CommandHandler("help", help_command))
-
     # on noncommand i.e message - echo the message on Telegram
-    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
+    dp.add_handler(MessageHandler(Filters.text & ~Filters.command , echo))
+    
 
     # Start the Bot
     updater.start_polling()
